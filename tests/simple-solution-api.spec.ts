@@ -31,3 +31,18 @@ test('post order with correct data should receive code 201', async ({ request })
   console.log('response body:', await response.json())
   expect(response.status()).toBe(StatusCodes.OK)
 })
+
+test('get order with orderID 0 should receive code 400', async ({ request }) => {
+  const response = await request.get('https://backend.tallinn-learning.ee/test-orders/0')
+  expect(response.status()).toBe(StatusCodes.BAD_REQUEST)
+})
+
+test('get order with orderID null', async ({ request }) => {
+  const response = await request.get('https://backend.tallinn-learning.ee/test-orders/')
+  expect(response.status()).toBe(StatusCodes.INTERNAL_SERVER_ERROR)
+})
+
+test('get order with orderID 400', async ({ request }) => {
+  const response = await request.get('https://backend.tallinn-learning.ee/test-orders/test')
+  expect(response.status()).toBe(StatusCodes.BAD_REQUEST)
+})
