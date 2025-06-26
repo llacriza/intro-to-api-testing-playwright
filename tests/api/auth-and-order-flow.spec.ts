@@ -2,6 +2,8 @@ import { expect, test } from '@playwright/test'
 import { StatusCodes } from 'http-status-codes'
 import { LoginDto } from '../dto/login-dto'
 import { OrderDto } from '../dto/order-dto'
+import { APIResponse } from 'playwright'
+
 
 const serviceURL = 'https://backend.tallinn-learning.ee/'
 const loginPath = 'login/student'
@@ -60,3 +62,28 @@ test.describe('Tallinn delivery API tests', () => {
     expect.soft(orderResponseBody.id).toBeDefined()
   })
 })
+
+test('Return a valid body JWT token after login', async ({ request }) => {
+  const requestBody: LoginDto = LoginDto.createLoginWithCorrectData();
+  const response: APIResponse = await request.post(`${serviceURL}${loginPath}`, {
+    data: requestBody,
+  });
+  const jwt: string = await response.text();
+  const jwtRegex = /^eyJhb[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
+  console.log('JWT:', jwt);
+  expect.soft(jwt).toMatch(jwtRegex);
+  expect.soft(response.status()).toBe(StatusCodes.OK);
+})
+
+test('Return code 405 for wrong HTTP method on login', async ({ request }) => {
+  const response: APIResponse = await request.get(`${serviceURL}${loginPath}`);
+  console.log('Status for wrong HTTP method:', response.status());
+
+  expect.soft(response.status()).toBe(StatusCodes.METHOD_NOT_ALLOWED);
+});
+
+test('Return code 400 for invalid login request body', async ({ request }) => {
+  const response: APIResponse = await request.post(`${serviceURL}${loginPath}`)
+  console.log('Status for invalid body:', response.status());
+  expect.soft(response.status()).toBe(StatusCodes.BAD_REQUEST);
+});

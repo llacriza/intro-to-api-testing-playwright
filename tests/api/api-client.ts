@@ -1,4 +1,4 @@
-import { APIRequestContext } from 'playwright'
+import { APIRequestContext, APIResponse } from 'playwright'
 import { LoginDto } from '../dto/login-dto'
 import { StatusCodes } from 'http-status-codes'
 import { expect } from '@playwright/test'
@@ -58,5 +58,20 @@ export class ApiClient {
     console.log(responseBody)
 
     return responseBody.id
+  }
+
+  async deleteOrder(orderId: number): Promise<APIResponse> {
+  console.log('Deleting order...')
+  const response = await this.request.delete(`${serviceURL}${orderPath}/${orderId}`, {
+    headers: {
+      Authorization: `Bearer ${this.jwt}`,
+    },
+  })
+    console.log('Delete response: ', response)
+    expect(response.status()).toBe(StatusCodes.OK)
+    const responseBody = await response.json()
+  console.log('Order deleted: ',)
+  console.log(responseBody)
+    return response
   }
 }
