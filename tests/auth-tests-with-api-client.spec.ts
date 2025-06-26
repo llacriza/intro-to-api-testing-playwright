@@ -9,7 +9,7 @@ test('Successful login and create order with api client', async ({ request }) =>
 })
 test('Successful login and delete unexisting order with api client', async ({ request }) => {
   const apiClient = await ApiClient.getInstance(request)
-  const orderId = 467480;
+  const orderId = 467480
   console.log('orderId:', orderId)
   await apiClient.deleteOrder(orderId)
   const response = await apiClient.deleteOrder(orderId)

@@ -6,7 +6,7 @@ export class OrderDto {
   comment: string
   id: number
 
-   constructor(
+  constructor(
     courierId: number,
     customerName: string,
     customerPhone: string,
@@ -28,16 +28,17 @@ export class OrderDto {
       'test comment',
       '1',
       Math.floor(Math.random() * 100),
-      'OPEN',)
+      'OPEN',
+    )
   }
   static createOrderWithoutId(): Omit<OrderDto, 'id'> {
-        return new OrderDto(
-        Math.floor(Math.random() * 100),
-        'John Smith',
-        'test comment',
-          '1',
-          Math.floor(Math.random() * 100),
-          'OPEN',)
-
-    }
+    return new OrderDto(
+      Math.floor(Math.random() * 100),
+      'John Smith',
+      'test comment',
+      '1',
+      Math.floor(Math.random() * 100),
+      'OPEN',
+    )
+  }
 }

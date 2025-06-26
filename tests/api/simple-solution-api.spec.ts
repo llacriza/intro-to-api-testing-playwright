@@ -9,7 +9,6 @@ const serviceMockedURL = 'https://backend.tallinn-learning.ee/test-orders'
 
 test.describe('Simple solution API tests', () => {
   test('get order with correct id should receive code 200', async ({ request }) => {
-
     const response = await request.get(`${serviceMockedURL}/1`)
     console.log('response body:', await response.json())
     console.log('response headers:', response.headers())
@@ -17,8 +16,14 @@ test.describe('Simple solution API tests', () => {
   })
 
   test('post order with correct data should receive code 200', async ({ request }) => {
-
-    const requestBody = new OrderDto(145,'John Doe', '+123456789', 'Urgent order', 9087078543, 'OPEN',)
+    const requestBody = new OrderDto(
+      145,
+      'John Doe',
+      '+123456789',
+      'Urgent order',
+      9087078543,
+      'OPEN',
+    )
     const response = await request.post(serviceMockedURL, {
       data: requestBody,
     })
@@ -29,8 +34,9 @@ test.describe('Simple solution API tests', () => {
     expect.soft(responseBody.customerName).toBeDefined()
   })
 
-  test('post order with correct data should receive code 200 - process full body', async ({ request,}) => {
-
+  test('post order with correct data should receive code 200 - process full body', async ({
+    request,
+  }) => {
     const requestBody = OrderDto.createOrderWithoutId()
     const response = await request.post(serviceMockedURL, {
       data: requestBody,
