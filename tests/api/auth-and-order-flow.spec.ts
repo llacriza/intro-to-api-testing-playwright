@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import { LoginDto } from '../dto/login-dto'
 import { OrderDto } from '../dto/order-dto'
 import { APIResponse } from 'playwright'
+import { ApiClient } from './api-client'
 
 const serviceURL = 'https://backend.tallinn-learning.ee/'
 const loginPath = 'login/student'
@@ -85,4 +86,89 @@ test('Return code 400 for invalid login request body', async ({ request }) => {
   const response: APIResponse = await request.post(`${serviceURL}${loginPath}`)
   console.log('Status for invalid body:', response.status())
   expect.soft(response.status()).toBe(StatusCodes.BAD_REQUEST)
+})
+
+
+
+
+test('Successful finding order by ID without ApiClient ', async ({ request }) => {
+  const requestBody = LoginDto.createLoginWithCorrectData()
+  const loginResponse = await request.post(`${serviceURL}${loginPath}`, {
+    data: requestBody,
+  })
+  expect.soft(loginResponse.ok()).toBeTruthy()
+  const jwt = await loginResponse.text()
+  const createOrderResponse = await request.post(`${serviceURL}${orderPath}`, {
+    headers: { Authorization: `Bearer ${jwt}` },
+    data: {
+      status: 'OPEN',
+      courierId: 8,
+      customerName: 'Glafira',
+      customerPhone: '58392876',
+      comment: 'without api',
+      id: 0,
+    },
+  })
+  expect.soft(createOrderResponse.ok()).toBeTruthy()
+  const { id: orderId } = await createOrderResponse.json()
+  const getOrderResponse: APIResponse = await request.get(`${serviceURL}${orderPath}/${orderId}`, {
+    headers: { Authorization: `Bearer ${jwt}` },
+  })
+  expect.soft(getOrderResponse.ok()).toBeTruthy()
+  const orderData = await getOrderResponse.json()
+  console.log('Order by ID:', orderData)
+  expect(orderData.id).toBe(orderId)
+})
+
+test('Successful deleting order by ID without ApiClient ', async ({ request }) => {
+  const requestBody = LoginDto.createLoginWithCorrectData()
+  const loginResponse = await request.post(`${serviceURL}${loginPath}`, {
+    data: requestBody,
+  })
+  expect.soft(loginResponse.ok()).toBeTruthy()
+  const jwt = await loginResponse.text()
+  const createOrderResponse = await request.post(`${serviceURL}${orderPath}`, {
+    headers: { Authorization: `Bearer ${jwt}` },
+    data: {
+      status: 'OPEN',
+      courierId: 8,
+      customerName: 'Glafira',
+      customerPhone: '58392876',
+      comment: 'without api',
+      id: 0,
+    },
+  })
+  expect.soft(createOrderResponse.ok()).toBeTruthy()
+  const { id: orderId } = await createOrderResponse.json()
+  expect.soft(orderId).toBeTruthy()
+  const deleteResponse = await request.delete(`${serviceURL}${orderPath}/${orderId}`, {
+    headers: { Authorization: `Bearer ${jwt}` },
+  })
+  const getOrderResponse: APIResponse = await request.get(`${serviceURL}${orderPath}/${orderId}`, {
+    headers: { Authorization: `Bearer ${jwt}` },
+  })
+  expect.soft(deleteResponse.status()).toBe(StatusCodes.OK);
+  expect.soft(getOrderResponse.status()).toBe(StatusCodes.OK);
+
+})
+
+test('Successful order with ApiClient', async ({ request }) => {
+  const apiClient = await ApiClient.getInstance(request)
+  const orderId = await apiClient.createOrderAndReturnOrderId()
+  console.log('orderId:', orderId)
+})
+
+test('Successful get order via client id with ApiClient', async ({ request }) => {
+  const apiClient = await ApiClient.getInstance(request)
+  const orderId = await apiClient.createOrderAndReturnOrderId()
+  console.log('orderId:', orderId)
+})
+
+test('Delete order by ID using ApiClient', async ({ request }) => {
+  const apiClient = await ApiClient.getInstance(request)
+  const orderId = await apiClient.createOrderAndReturnOrderId()
+  const deleteResponse = await apiClient.deleteOrder(orderId)
+  expect.soft(deleteResponse.status()).toBe(StatusCodes.OK)
+  const getResponse = await apiClient.deleteOrder(orderId)
+  expect.soft(getResponse.status()).toBe(StatusCodes.NOT_FOUND)
 })

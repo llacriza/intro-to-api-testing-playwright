@@ -66,12 +66,8 @@ export class ApiClient {
       headers: {
         Authorization: `Bearer ${this.jwt}`,
       },
-    })
-    console.log('Delete response: ', response)
-    expect(response.status()).toBe(StatusCodes.OK)
-    const responseBody = await response.json()
-    console.log('Order deleted: ')
-    console.log(responseBody)
-    return response
+    });
+    console.log('Delete response: ', response.status());
+    return response;
   }
 }
