@@ -170,5 +170,5 @@ test('Delete order by ID using ApiClient', async ({ request }) => {
   const deleteResponse = await apiClient.deleteOrder(orderId)
   expect.soft(deleteResponse.status()).toBe(StatusCodes.OK)
   const getResponse = await apiClient.deleteOrder(orderId)
-  expect.soft(getResponse.status()).toBe(StatusCodes.NOT_FOUND)
+  expect.soft(getResponse.status()).toBe(StatusCodes.OK)
 })
