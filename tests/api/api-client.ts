@@ -66,8 +66,8 @@ export class ApiClient {
       headers: {
         Authorization: `Bearer ${this.jwt}`,
       },
-    });
-    console.log('Delete response: ', response.status());
-    return response;
+    })
+    console.log('Delete response: ', response.status())
+    return response
   }
 }

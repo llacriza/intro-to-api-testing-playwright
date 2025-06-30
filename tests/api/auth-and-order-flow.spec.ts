@@ -88,9 +88,6 @@ test('Return code 400 for invalid login request body', async ({ request }) => {
   expect.soft(response.status()).toBe(StatusCodes.BAD_REQUEST)
 })
 
-
-
-
 test('Successful finding order by ID without ApiClient ', async ({ request }) => {
   const requestBody = LoginDto.createLoginWithCorrectData()
   const loginResponse = await request.post(`${serviceURL}${loginPath}`, {
@@ -147,9 +144,8 @@ test('Successful deleting order by ID without ApiClient ', async ({ request }) =
   const getOrderResponse: APIResponse = await request.get(`${serviceURL}${orderPath}/${orderId}`, {
     headers: { Authorization: `Bearer ${jwt}` },
   })
-  expect.soft(deleteResponse.status()).toBe(StatusCodes.OK);
-  expect.soft(getOrderResponse.status()).toBe(StatusCodes.OK);
-
+  expect.soft(deleteResponse.status()).toBe(StatusCodes.OK)
+  expect.soft(getOrderResponse.status()).toBe(StatusCodes.OK)
 })
 
 test('Successful order with ApiClient', async ({ request }) => {
